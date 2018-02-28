@@ -17,29 +17,29 @@
 # =============================================================================
 
 """
-local_qiskit_simulator command to toggle noise off or on.
+local_qasm_simulator command to save the quantum state.
 """
 from qiskit import CompositeGate
 from qiskit import Gate
 from qiskit import QuantumCircuit
-from qiskit._instructionset import InstructionSet
-from qiskit._quantumregister import QuantumRegister
+from qiskit import InstructionSet
+from qiskit import QuantumRegister
 
 
-class NoiseGate(Gate):
+class SaveGate(Gate):
     """Simulator save operation."""
 
     def __init__(self, m, qubit, circ=None):
         """Create new save gate."""
-        super().__init__("noise", [m], [qubit], circ)
+        super().__init__("save", [m], [qubit], circ)
 
     def qasm(self):
         """Return OPENQASM string."""
         qubit = self.arg[0]
         m = self.param[0]
-        return self._qasmif("noise(%d) %s[%d];" % (m,
-                                                   qubit[0].name,
-                                                   qubit[1]))
+        return self._qasmif("save(%d) %s[%d];" % (m,
+                                                  qubit[0].name,
+                                                  qubit[1]))
 
     def inverse(self):
         """Invert this gate."""
@@ -47,24 +47,24 @@ class NoiseGate(Gate):
 
     def reapply(self, circ):
         """Reapply this gate to corresponding qubits in circ."""
-        self._modifiers(circ.noise(self.param[0], self.arg[0]))
+        self._modifiers(circ.save(self.param[0], self.arg[0]))
 
 
-def noise(self, m, q):
-    """Cache the quantum state of locla_qiskit_simulator."""
+def save(self, m, q):
+    """Cache the quantum state of local_qasm_simulator."""
     if isinstance(q, QuantumRegister):
         gs = InstructionSet()
         for j in range(q.size):
-            gs.add(self.noise(m, (q, j)))
+            gs.add(self.save(m, (q, j)))
         return gs
     self._check_qubit(q)
-    return self._attach(NoiseGate(m, q, self))
+    return self._attach(SaveGate(m, q, self))
 
 
 # Add to QuantumCircuit and CompositeGate classes
-QuantumCircuit.noise = noise
-CompositeGate.noise = noise
+QuantumCircuit.save = save
+CompositeGate.save = save
 
 # Add to QASM header for parsing
-QuantumCircuit.header += "\ngate noise(m) a {}" + \
-    "  // (local_qiskit_simulator) switch noise off (0) or on (1)"
+QuantumCircuit.header += "\ngate save(m) a {}" + \
+    "  // (local_qasm_simulator) cache quantum state"
