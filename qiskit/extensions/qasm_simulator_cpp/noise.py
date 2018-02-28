@@ -17,28 +17,29 @@
 # =============================================================================
 
 """
-local_qiskit_simulator command to load a saved quantum state.
+local_qasm_simulator command to toggle noise off or on.
 """
 from qiskit import CompositeGate
 from qiskit import Gate
 from qiskit import QuantumCircuit
-from qiskit._instructionset import InstructionSet
-from qiskit._quantumregister import QuantumRegister
+from qiskit import InstructionSet
+from qiskit import QuantumRegister
 
 
-class LoadGate(Gate):
-    """Simulator load operation."""
+class NoiseGate(Gate):
+    """Simulator save operation."""
 
     def __init__(self, m, qubit, circ=None):
-        """Create new load gate."""
-        super().__init__("load", [m], [qubit], circ)
+        """Create new save gate."""
+        super().__init__("noise", [m], [qubit], circ)
 
     def qasm(self):
         """Return OPENQASM string."""
         qubit = self.arg[0]
         m = self.param[0]
-        return self._qasmif("load(%d) %s[%d];" % (m, qubit[0].name,
-                                                  qubit[1]))
+        return self._qasmif("noise(%d) %s[%d];" % (m,
+                                                   qubit[0].name,
+                                                   qubit[1]))
 
     def inverse(self):
         """Invert this gate."""
@@ -46,24 +47,24 @@ class LoadGate(Gate):
 
     def reapply(self, circ):
         """Reapply this gate to corresponding qubits in circ."""
-        self._modifiers(circ.load(self.param[0], self.arg[0]))
+        self._modifiers(circ.noise(self.param[0], self.arg[0]))
 
 
-def load(self, m, q):
-    """Load cached quantum state of local_qiskit_simulator."""
+def noise(self, m, q):
+    """Cache the quantum state of locla_qasm_simulator."""
     if isinstance(q, QuantumRegister):
         gs = InstructionSet()
         for j in range(q.size):
-            gs.add(self.load(m, (q, j)))
+            gs.add(self.noise(m, (q, j)))
         return gs
     self._check_qubit(q)
-    return self._attach(LoadGate(m, q, self))
+    return self._attach(NoiseGate(m, q, self))
 
 
 # Add to QuantumCircuit and CompositeGate classes
-QuantumCircuit.load = load
-CompositeGate.load = load
+QuantumCircuit.noise = noise
+CompositeGate.noise = noise
 
 # Add to QASM header for parsing
-QuantumCircuit.header += "\ngate load(m) a {}" + \
-    "  // (local_qiskit_simulator) load cached quantum state"
+QuantumCircuit.header += "\ngate noise(m) a {}" + \
+    "  // (local_qasm_simulator) switch noise off (0) or on (1)"
