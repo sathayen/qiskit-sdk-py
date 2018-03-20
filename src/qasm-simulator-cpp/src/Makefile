@@ -50,6 +50,9 @@ sim: main.o
 sim_debug: main.o
 	$(CC) -g $(CPPFLAGS) $(DEFINES) -o ${OUTPUT_DIR}/qasm_simulator_cpp_debug ${OUTPUT_DIR}/main.o $(LIBS)
 
+depend: 
+	../build_dependencies.sh
+
 clean:
 	rm -rf $(OUTPUT_DIR)
 
