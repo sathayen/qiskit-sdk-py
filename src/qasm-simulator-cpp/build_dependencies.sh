@@ -12,7 +12,7 @@
 #
 # .. note:: Tested on Ubuntu 16.04 only. 
 # ------------------------------------------------------------------------------ 
-
+set -ex
 os_type=`uname -s`
 
 # Check who is the current user.
@@ -34,11 +34,12 @@ elif [[ "$os_type" == "Linux" ]]; then
     echo "Installing dependencies on Linux"    
     linux_distro=`cat /etc/*release | grep "ID_LIKE=" | cut -c9- | tr -d '"'`
     if [[ "$linux_distro" == "debian" ]]; then
-        ${SUDOCMD} apt-get
+        ${SUDOCMD} apt-get update
         ${SUDOCMD} apt-get install build-essential libblas-dev liblapack-dev
     elif [[ "$linux_distro" == "fedora" ]]; then
-        ${SUDOCMD}  yum install devtoolset-6 blas blas-devel lapack lapack-devel
-        ${SUDOCMD}  scl enable devtoolset-6 bash
+        ${SUDOCMD} yum update
+        ${SUDOCMD} yum install devtoolset-6 blas blas-devel lapack lapack-devel
+        ${SUDOCMD} scl enable devtoolset-6 bash
     else
         echo "Unsupported linux distro: $linux_distro"
     fi
