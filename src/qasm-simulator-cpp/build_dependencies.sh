@@ -35,10 +35,10 @@ elif [[ "$os_type" == "Linux" ]]; then
     linux_distro=`cat /etc/*release | grep "ID_LIKE=" | cut -c9- | tr -d '"'`
     if [[ "$linux_distro" == "debian" ]]; then
         ${SUDOCMD} apt-get update
-        ${SUDOCMD} apt-get install build-essential libblas-dev liblapack-dev
+        ${SUDOCMD} apt-get -y install build-essential libblas-dev liblapack-dev
     elif [[ "$linux_distro" == "fedora" ]]; then
         ${SUDOCMD} yum update
-        ${SUDOCMD} yum install devtoolset-6 blas blas-devel lapack lapack-devel
+        ${SUDOCMD} yum -y install devtoolset-6 blas blas-devel lapack lapack-devel
         ${SUDOCMD} scl enable devtoolset-6 bash
     else
         echo "Unsupported linux distro: $linux_distro"
