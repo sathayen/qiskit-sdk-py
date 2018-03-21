@@ -6,11 +6,16 @@ OUTPUT_DIR = ../../../out
 CC = g++
 
 # Use Homebrew GNU g++ for enabling OpenMP on macOS
-
 OS:=$(shell uname)
 GCC7:=$(shell g++-7 --version | grep ^'command not found')
 ifeq ($(OS)$(GCC7),Darwin)
 	CC = g++-7
+endif
+
+# -march not supported on ppc64le (Power). Use -mcpu instead
+ARCH:$(shell uname -m)
+ifeq ($(ARCH),ppc64le)
+	OPT = -O3 -mcpu=native -ffast-math
 endif
 
 # Check if compiler is Apple LLVM and doesn't support OpenMP
