@@ -13,7 +13,7 @@ ifeq ($(OS)$(GCC7),Darwin)
 endif
 
 # -march not supported on ppc64le (Power). Use -mcpu instead
-ARCH:$(shell uname -m)
+ARCH:=$(shell uname -m)
 ifeq ($(ARCH),ppc64le)
 	OPT = -O3 -mcpu=native -ffast-math
 endif
